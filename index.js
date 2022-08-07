@@ -1,4 +1,36 @@
 const PRESETS = {
+  LEVY_C_CURVE: {
+    AX: `return "F";`,
+    PR: `return {
+  F: "+F--F+",
+};`,
+    IS: `return [{ x: 0, y: 0, a: 0 }];`,
+    OP: `advance = (state, dw, dr) => {
+  const da = (Math.PI * dw) / 180;
+  return {
+    x: state.x + dr * Math.cos(state.a + da),
+    y: state.y - dr * Math.sin(state.a + da),
+    a: state.a + da,
+  };
+};
+
+return {
+  F: (draw, state) => {
+    const source = state.pop();
+    const target = advance(source, 0, 10);
+    state.push(target);
+    draw
+      .line(source.x, source.y, target.x, target.y)
+      .stroke({ width: 1, color: "black" });
+  },
+  "+": (draw, state) => {
+    state.push(advance(state.pop(), +45, 0))
+  },
+  "-": (draw, state) => {
+    state.push(advance(state.pop(), -45, 0))
+  },
+};`,
+  },
   BARNSLEY_FERN: {
     AX: `return "X";`,
     PR: `return {
