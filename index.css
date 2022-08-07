@@ -61,4 +61,6 @@
   svg {
     grid-area: simulation;
     margin: 1rem;
+    stroke-linecap: round;
+    max-height: calc(100vh - 2rem);
   }
