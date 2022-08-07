@@ -214,7 +214,8 @@ class LSP {
 
     var draw = SVG().addTo("body");
     const g = draw.group();
-    const instr = this.produceN(this.axFunction(), 3);
+    const depth = parseInt(document.getElementById("depth").value);
+    const instr = this.produceN(this.axFunction(), depth);
     this.state = this.isFunction();
     instr
       .split("")
