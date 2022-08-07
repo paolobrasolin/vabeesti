@@ -233,7 +233,22 @@ class LSP {
   produce(input) {
     return input
       .split("")
-      .map((c) => this.prFunction()[c] || c)
+      .map((c) => {
+        const rule = this.prFunction()[c];
+        switch (typeof rule) {
+          case "string":
+            return rule;
+          case "function":
+            return rule();
+          case "undefined":
+            return c;
+          default:
+            console.error(
+              "Only strings and functions are allowed as production rules."
+            );
+            return c;
+        }
+      })
       .join("");
   }
 
