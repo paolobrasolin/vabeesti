@@ -6,34 +6,33 @@ const PRESETS = {
   F: "FF",
 };`,
     IS: `return [{ x: 0, y: 0, a: 0 }];`,
-    OP: `return {
-  F: (drawing, state) => {
-    const s = { ...state.pop() };
-    const target = this.polpol(s.x, s.y, s.a, 0, 10);
-    drawing
-      .line(s.x, s.y, target[0], target[1])
-      .stroke({ width: 0.1, color: "black" });
-    s.x = target[0];
-    s.y = target[1];
-    state.push(s);
+    OP: `advance = (state, dw, dr) => {
+  const da = (Math.PI * dw) / 180;
+  return {
+    x: state.x + dr * Math.cos(state.a + da),
+    y: state.y - dr * Math.sin(state.a + da),
+    a: state.a + da,
+  };
+};
+
+return {
+  F: (draw, state) => {
+    const source = state.pop();
+    const target = advance(source, 0, 10);
+    state.push(target);
+    draw
+      .line(source.x, source.y, target.x, target.y)
+      .stroke({ width: 1, color: "black" });
   },
-  "+": (drawing, state) => {
-    const s = { ...state.pop() };
-    s.a = s.a + (Math.PI * 25) / 180;
-    state.push(s);
+  "+": (draw, state) => {
+    state.push(advance(state.pop(), +25, 0))
   },
-  "-": (drawing, state) => {
-    const s = { ...state.pop() };
-    s.a = s.a - (Math.PI * 25) / 180;
-    state.push(s);
+  "-": (draw, state) => {
+    state.push(advance(state.pop(), -25, 0))
   },
-  "[": (drawing, state) => {
-    state.push({ ...state.slice(-1)[0] });
-  },
-  "]": (drawing, state) => {
-    state.pop();
-  },
-  X: (drawing, state) => {},
+  "[": (draw, state) => state.push({ ...state.slice(-1)[0] }),
+  "]": (draw, state) => state.pop(),
+  X: (draw, state) => {},
 };`,
   },
   SIERPINSKI_GASKET: {
