@@ -52,9 +52,10 @@ return {
     const source = state.pop();
     const target = advance(source, 0, 10);
     state.push(target);
-    draw
-      .line(source.x, source.y, target.x, target.y)
-      .stroke({ width: 1, color: "black" });
+    draw.l({x: 10 * Math.cos(source.a + (Math.PI * 10) / 180), y: - 10 * Math.sin(source.a + (Math.PI * 10) / 180)});
+    // draw
+    //  .line(source.x, source.y, target.x, target.y)
+    //  .stroke({ width: 1, color: "black" });
   },
   "+": (draw, state) => {
     state.push(advance(state.pop(), +25, 0))
@@ -62,8 +63,13 @@ return {
   "-": (draw, state) => {
     state.push(advance(state.pop(), -25, 0))
   },
-  "[": (draw, state) => state.push({ ...state.slice(-1)[0] }),
-  "]": (draw, state) => state.pop(),
+  "[": (draw, state) => {
+    state.push({ ...state.slice(-1)[0] })
+  },
+  "]": (draw, state) => {
+    state.pop();
+    draw.M({x: state.slice(-1)[0].x, y: state.slice(-1)[0].y});
+  },
   X: (draw, state) => {},
 };`,
   },
@@ -246,12 +252,14 @@ class LSP {
 
     var draw = SVG().addTo("body");
     const g = draw.group();
+    const path = g.path().M({ x: 0, y: 0 });
     const depth = parseInt(document.getElementById("depth").value);
     const instr = this.produceN(this.axFunction(), depth);
     this.state = this.isFunction();
     instr
       .split("")
-      .forEach((c) => (this.opFunction()[c] || (() => {}))(g, this.state));
+      .forEach((c) => (this.opFunction()[c] || (() => {}))(path, this.state));
+    path.stroke({ width: 1, color: "black" });
     const bb = g.bbox();
     draw.viewbox(bb.x - 1, bb.y - 1, bb.width + 2, bb.height + 2);
   }

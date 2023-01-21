@@ -64,3 +64,7 @@
     stroke-linecap: round;
     max-height: calc(100vh - 2rem);
   }
+
+  svg path {
+    fill: none;
+  }
